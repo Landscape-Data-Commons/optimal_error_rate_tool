@@ -1,7 +1,6 @@
 library(shiny)
 
 shinyUI(fluidPage(
-tags$head(includeScript('google_analytics.js')),
   titlePanel("Optimal Error Rate Calculator"),
   
   sidebarLayout(
