@@ -165,18 +165,3 @@ effect.size <- function(x1,n1,s1,type,pctChg,x2,n2,s2,paired,threshold=0){
       sp <- sqrt( (n1-1)*s1/n1  )
     }
   }
-  d <- xd/sp
-  return(d)
-}
-
-
-#The function used to calculate optimal alphas is: optab(n1=NULL,n2=NULL,d=NULL,T1T2cratio=1,HaHopratio=1,type = c("two.sample", "one.sample", "paired"),tails = c("two.tailed","one.tailed"))
-#The arguments 'n1' and 'n2' are the samples sizes of each group (for a one sample test, enter any value >=3 for n2, n2 will be ignored)
-#The argument 'd' is the 'Cohen's d' standardized critical effect size. Cohen's d = difference between group means/pooled within group standard deviation
-#The argument 'T1T2cratio' is the cost ratio of Type I errors relative to Type II errors. T1T2cratio is set at 1 as a default, making Type I and Type II errors equally serious.
-#The argument 'HaHopratio' is the prior probability of the alternate hypothesis relative to the prior probability of the null hypothesis. HaHopratio is set at 1 as a default, to not weight alpha and beta by their prior probabilities (assuming they are unknown).
-#The argument 'type' is the type of t-test being undertaken and must be "two.sample", "one.sample" or "paired". If ignored, "two.sample" is the default.
-#The argument 'tails'is the number of tails being examined and must be either "two.tailed" or "one.tailed". If ignored, "two.tailed" is the default.
-#This code is partially based on code modified from the R package 'pwr'(Champely 2009).
-
-

@@ -84,7 +84,7 @@ tags$head(includeScript('google_analytics.js')),
                                 (see Mudge et al. 2012a, 2012b). The optimal error rate can be adjusted to account for differential costs of the different types of errors and for expectations 
                                 (i.e., prior probabilities) of the likelihood of change occurring (or not occurring)."),
                  p("This tool uses R code provided by Mudge et al. (2012a) to calculate optimal Type I error rates. Specifically, this Shiny tool executes the following function:"),
-                 pre("optab(n1,n2,d,type,tails,T1T2cratio,HaHopratio"),
+                 pre("optab(n1,n2,d,type,tails,T1T2cratio,HaHopratio)"),
                  p("where n1 and n2 are sample sizes, d is Cohen's effect size, type is the type of t-Test (one sample, two-sample, paired), tails refers to whether the test is for a one-tailed or two-tailed alternative, T1T2cratio = the cost ration of Type I to Type II errors, and HaHopratio is the ratio of prior probabilities. A companion function was written to produce the plot showing how error rates change as Type I error rate goes from zero to one:"),
                  pre("optab.plot(n1,n2,d,type,tails,T1T2cratio,HaHopratio)"),
                  h4("References"),
