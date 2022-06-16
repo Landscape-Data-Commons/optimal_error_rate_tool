@@ -81,8 +81,6 @@ beta.t.test <- function(n1 = NULL,
   1 - eval(p.body)
 }
 
-w.average.error<-function (alpha=NULL,n1=NULL,n2=NULL,d=NULL,T1T2cratio=1,HaHopratio=1,type = c("two.sample", "one.sample", "paired"),tails = c("two.tailed","one.tailed")) 
-  ((alpha*T1T2cratio+HaHopratio*(beta.t.test(n1=n1,n2=n2,d=d,sig.level=alpha,type=type,tails=tails))))/(HaHopratio+T1T2cratio)
 #' Calculate average error
 #' @param alpha Numeric. The alpha value to use.
 #' @param n1 Numeric. The sample size for group 1
@@ -92,6 +90,24 @@ w.average.error<-function (alpha=NULL,n1=NULL,n2=NULL,d=NULL,T1T2cratio=1,HaHopr
 #' @param HaHopratio Numeric. The prior probability of the alternate hypothesis relative to the prior probability of the null hypothesis. \code{HaHopratio} is set at \code{1} as a default, to not weight alpha and beta by their prior probabilities (assuming they are unknown).
 #' @param type Character string. The type of t-test being undertaken. Must be \code{"two.sample"}, \code{"one.sample"}, or \code{"paired"}. If ignored, \code{"two.sample"} is the default.
 #' @param tails Character string. The number of tails being examined. Must be either \code{"two.tailed"} or \code{"one.tailed"}. If ignored, \code{"two.tailed"} is the default.
+w.average.error <- function(alpha = NULL,
+                            n1 = NULL,
+                            n2 = NULL,
+                            d = NULL,
+                            T1T2cratio = 1,
+                            HaHopratio = 1,
+                            type = c("two.sample", "one.sample", "paired"),
+                            tails = c("two.tailed","one.tailed")) {
+  numerator <- alpha * T1T2cratio + HaHopratio * beta.t.test(n1 = n1,
+                                                             n2 = n2,
+                                                             d = d,
+                                                             sig.level = alpha,
+                                                             type = type,
+                                                             tails  = tails)
+  denominator <- HaHopratio + T1T2cratio
+  
+  numerator / denominator
+} 
 
 min.average.error<-function (n1=NULL,n2=NULL,d=NULL,T1T2cratio=1,HaHopratio=1,type = c("two.sample", "one.sample", "paired"),tails = c("two.tailed","one.tailed")) 
   unlist(optimize(w.average.error,c(0,1),tol=0.0000000000001,n1=n1,n2=n2,d=d,T1T2cratio=T1T2cratio,HaHopratio=HaHopratio,type=type,tails=tails))[2]
