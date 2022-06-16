@@ -109,8 +109,6 @@ w.average.error <- function(alpha = NULL,
   numerator / denominator
 } 
 
-min.average.error<-function (n1=NULL,n2=NULL,d=NULL,T1T2cratio=1,HaHopratio=1,type = c("two.sample", "one.sample", "paired"),tails = c("two.tailed","one.tailed")) 
-  unlist(optimize(w.average.error,c(0,1),tol=0.0000000000001,n1=n1,n2=n2,d=d,T1T2cratio=T1T2cratio,HaHopratio=HaHopratio,type=type,tails=tails))[2]
 #' Calculate the minimum average error
 #' @param n1 Numeric. The sample size for group 1
 #' @param n2 Numeric. The sample size for group 2. For a one sample test, enter any value >= 3 for \code{n2}. \code{n2} will be ignored.
@@ -119,6 +117,26 @@ min.average.error<-function (n1=NULL,n2=NULL,d=NULL,T1T2cratio=1,HaHopratio=1,ty
 #' @param HaHopratio Numeric. The prior probability of the alternate hypothesis relative to the prior probability of the null hypothesis. \code{HaHopratio} is set at \code{1} as a default, to not weight alpha and beta by their prior probabilities (assuming they are unknown).
 #' @param type Character string. The type of t-test being undertaken. Must be \code{"two.sample"}, \code{"one.sample"}, or \code{"paired"}. If ignored, \code{"two.sample"} is the default.
 #' @param tails Character string. The number of tails being examined. Must be either \code{"two.tailed"} or \code{"one.tailed"}. If ignored, \code{"two.tailed"} is the default.
+min.average.error <- function(n1 = NULL,
+                              n2 = NULL,
+                              d = NULL,
+                              T1T2cratio = 1,
+                              HaHopratio = 1,
+                              type = c("two.sample", "one.sample", "paired"),
+                              tails = c("two.tailed","one.tailed")) {
+  # Note that only f, interval, and tol are arguments for optimize()
+  # The rest are passed to the function f (w.average.error())
+  unlist(optimize(f = w.average.error,
+                  interval = c(0, 1),
+                  tol = 0.0000000000001,
+                  n1 = n1,
+                  n2 = n2,
+                  d = d,
+                  T1T2cratio = T1T2cratio,
+                  HaHopratio = HaHopratio,
+                  type = type,
+                  tails = tails))[2]
+}
 
 alpha<-function (n1=NULL,n2=NULL,d=NULL,T1T2cratio=1,HaHopratio=1,type = c("two.sample", "one.sample", "paired"),tails = c("two.tailed","one.tailed")) 
   unlist(optimize(w.average.error,c(0,1),tol=0.000000000001,n1=n1,n2=n2,d=d,T1T2cratio=T1T2cratio,HaHopratio=HaHopratio,type=type,tails=tails))[1]
