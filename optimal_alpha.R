@@ -12,9 +12,10 @@ beta.t.test<-function (n1 = NULL, n2 = NULL, d = NULL, sig.level = 0.05, type = 
 #' @param type Character string. The type of t-test being undertaken. Must be \code{"two.sample"}, \code{"one.sample"}, or \code{"paired"}. If ignored, \code{"two.sample"} is the default.
 #' @param tails Character string. The number of tails being examined. Must be either \code{"two.tailed"} or \code{"one.tailed"}. If ignored, \code{"two.tailed"} is the default.
   if (!is.null(sig.level) && !is.numeric(sig.level) || any(0 > sig.level | sig.level > 1)) 
-    stop(sQuote("sig.level"), " must be numeric in [0, 1]")
+    stop("sig.level must be a numeric value between 0 and 1")
   if (!is.null(n1) && n1 < 2) 
-    stop("number of observations in the first group must be at least 2")
+    stop("The value of n1 (number of observations in the first group) must be at least 2")
+  
   type <- match.arg(type)
   tails <- match.arg(tails)
   d<-abs(d)
