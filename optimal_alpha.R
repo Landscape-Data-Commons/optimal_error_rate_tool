@@ -202,7 +202,6 @@ beta <- function(n1 = NULL,
 }
 
 
-optab<-function (n1=NULL,n2=NULL,d=NULL,T1T2cratio=1,HaHopratio=1,type = c("two.sample", "one.sample", "paired"),tails = c("two.tailed","one.tailed")) {  
 #' Produce a table with statistics including optimal alpha, optimal beta, overall probability of error, and cost-weighted probability of error
 #' @param n1 Numeric. The sample size for group 1
 #' @param n2 Numeric. The sample size for group 2. For a one sample test, enter any value >= 3 for \code{n2}. \code{n2} will be ignored.
@@ -211,21 +210,53 @@ optab<-function (n1=NULL,n2=NULL,d=NULL,T1T2cratio=1,HaHopratio=1,type = c("two.
 #' @param HaHopratio Numeric. The prior probability of the alternate hypothesis relative to the prior probability of the null hypothesis. \code{HaHopratio} is set at \code{1} as a default, to not weight alpha and beta by their prior probabilities (assuming they are unknown).
 #' @param type Character string. The type of t-test being undertaken. Must be \code{"two.sample"}, \code{"one.sample"}, or \code{"paired"}. If ignored, \code{"two.sample"} is the default.
 #' @param tails Character string. The number of tails being examined. Must be either \code{"two.tailed"} or \code{"one.tailed"}. If ignored, \code{"two.tailed"} is the default.
+optab <- function(n1 = NULL,
+                  n2 = NULL,
+                  d = NULL,
+                  T1T2cratio = 1,
+                  HaHopratio = 1,
+                  type = c("two.sample", "one.sample", "paired"),
+                  tails = c("two.tailed","one.tailed")){
+  optimal_alpha <- alpha(n1 = n1,
+                         n2 = n2,
+                         d = d,
+                         T1T2cratio = T1T2cratio,
+                         HaHopratio = HaHopratio,
+                         type = type,
+                         tails = tails)
   
-  list(
-    "test type"=match.arg(type),
-    "tails"=match.arg(tails),
-    "output"=t(data.frame(
-      "sample size 1"=n1,
-      "sample size 2"=n2,
-      "Cohen's d effect size"=d,
-      "Type I/II error cost ratio"=T1T2cratio,
-      "Ha/Ho prior probability ratio"=HaHopratio,
-      "overall probability of error"=(alpha(n1=n1,n2=n2,d=d,T1T2cratio=T1T2cratio,HaHopratio=HaHopratio,type=type,tails=tails)+HaHopratio*beta(n1=n1,n2=n2,d=d,T1T2cratio=T1T2cratio,HaHopratio=HaHopratio,type=type,tails=tails))/(1+HaHopratio),
-      "cost-weighted probability of error"=min.average.error(n1=n1,n2=n2,d=d,T1T2cratio=T1T2cratio,HaHopratio=HaHopratio,type=type,tails=tails), 
-      "optimal alpha"=alpha(n1=n1,n2=n2,d=d,T1T2cratio=T1T2cratio,HaHopratio=HaHopratio,type=type,tails=tails),
-      "optimal beta"=beta(n1=n1,n2=n2,d=d,T1T2cratio=T1T2cratio,HaHopratio=HaHopratio,type=type,tails=tails),row.names="values"))
-  )
+  optimal_beta <- beta(n1 = n1,
+                       n2 = n2,
+                       d = d,
+                       T1T2cratio = T1T2cratio,
+                       HaHopratio = HaHopratio,
+                       type = type,
+                       tails = tails)
+  
+  error_probability <- (optimal_alpha + HaHopratio * optimal_beta) / (1 + HaHopratio)
+  
+  error_probability_cost_weighted <- min.average.error(n1 = n1,
+                                                       n2 = n2,
+                                                       d = d,
+                                                       T1T2cratio = T1T2cratio,
+                                                       HaHopratio = HaHopratio,
+                                                       type = type,
+                                                       tails = tails)
+  
+  output_data_frame <- data.frame("sample size 1" = n1,
+                                  "sample size 2" = n2,
+                                  "Cohen's d effect size" = d,
+                                  "Type I/II error cost ratio" = T1T2cratio,
+                                  "Ha/Ho prior probability ratio" = HaHopratio,
+                                  "overall probability of error" = error_probability,
+                                  "cost-weighted probability of error" = error_probability_cost_weighted, 
+                                  "optimal alpha"= optimal_alpha,
+                                  "optimal beta" = optimal_beta,
+                                  row.names = "values")
+  
+  list("test type" = match.arg(type),
+       "tails" = match.arg(tails),
+       "output" = t(output_data_frame))
   
 }
 
