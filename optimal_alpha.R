@@ -1,5 +1,9 @@
 #Optimal alpha t-test R code version 1.1, updated for compatibility with R version 3.x.
 #Authored by Joe Mudge (questions or comments? contact: joe.mudge83@gmail.com).
+#This code is partially based on code modified from the R package 'pwr'(Champely 2009).
+
+# Updated 6/2022 by Nelson Stauffer for compatibility with R v4.x.x and for
+# clarity for future maintenance
 
 library(ggplot2)
 
