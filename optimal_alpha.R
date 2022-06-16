@@ -167,8 +167,6 @@ alpha <- function(n1 = NULL,
                   tails = tails))[1]
 }
 
-beta<-function (n1=NULL,n2=NULL,d=NULL,T1T2cratio=1,HaHopratio=1,type = c("two.sample", "one.sample", "paired"),tails = c("two.tailed","one.tailed")) 
-  ((T1T2cratio+HaHopratio)*min.average.error(n1=n1,n2=n2,d=d,T1T2cratio=T1T2cratio,HaHopratio=HaHopratio,type=type,tails=tails)-T1T2cratio*alpha(n1=n1,n2=n2,d=d,T1T2cratio=T1T2cratio,HaHopratio=HaHopratio,type=type,tails=tails))/HaHopratio
 #' Calculate the optimal beta
 #' @param n1 Numeric. The sample size for group 1
 #' @param n2 Numeric. The sample size for group 2. For a one sample test, enter any value >= 3 for \code{n2}. \code{n2} will be ignored.
@@ -177,6 +175,31 @@ beta<-function (n1=NULL,n2=NULL,d=NULL,T1T2cratio=1,HaHopratio=1,type = c("two.s
 #' @param HaHopratio Numeric. The prior probability of the alternate hypothesis relative to the prior probability of the null hypothesis. \code{HaHopratio} is set at \code{1} as a default, to not weight alpha and beta by their prior probabilities (assuming they are unknown).
 #' @param type Character string. The type of t-test being undertaken. Must be \code{"two.sample"}, \code{"one.sample"}, or \code{"paired"}. If ignored, \code{"two.sample"} is the default.
 #' @param tails Character string. The number of tails being examined. Must be either \code{"two.tailed"} or \code{"one.tailed"}. If ignored, \code{"two.tailed"} is the default.
+beta <- function(n1 = NULL,
+                 n2 = NULL,
+                 d = NULL,
+                 T1T2cratio = 1,
+                 HaHopratio = 1,
+                 type = c("two.sample", "one.sample", "paired"),
+                 tails = c("two.tailed","one.tailed")) {
+  optimal_alpha <- alpha(n1 = n1,
+                         n2 = n2,
+                         d = d,
+                         T1T2cratio = T1T2cratio,
+                         HaHopratio = HaHopratio,
+                         type = type,
+                         tails = tails)
+  
+  min_average_error <- min.average.error(n1 = n1,
+                                         n2 = n2,
+                                         d = d,
+                                         T1T2cratio = T1T2cratio,
+                                         HaHopratio = HaHopratio,
+                                         type = type,
+                                         tails = tails)
+  
+  ((T1T2cratio + HaHopratio) * min_average_error - T1T2cratio * optimal_alpha) / HaHopratio
+}
 
 
 optab<-function (n1=NULL,n2=NULL,d=NULL,T1T2cratio=1,HaHopratio=1,type = c("two.sample", "one.sample", "paired"),tails = c("two.tailed","one.tailed")) {  
