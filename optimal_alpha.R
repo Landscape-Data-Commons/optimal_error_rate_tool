@@ -3,7 +3,6 @@
 
 library(ggplot2)
 
-beta.t.test<-function (n1 = NULL, n2 = NULL, d = NULL, sig.level = 0.05, type = c("two.sample", "one.sample", "paired"),tails = c("two.tailed","one.tailed")) {
 #' Calculate a beta t-test
 #' @param n1 Numeric. The sample size for group 1
 #' @param n2 Numeric. The sample size for group 2. For a one sample test, enter any value >= 3 for \code{n2}. \code{n2} will be ignored.
@@ -11,31 +10,75 @@ beta.t.test<-function (n1 = NULL, n2 = NULL, d = NULL, sig.level = 0.05, type = 
 #' @param sig.level Numeric. The significance level. Must be between \code{0} and \code{1}. Defaults to \code{0.05}.
 #' @param type Character string. The type of t-test being undertaken. Must be \code{"two.sample"}, \code{"one.sample"}, or \code{"paired"}. If ignored, \code{"two.sample"} is the default.
 #' @param tails Character string. The number of tails being examined. Must be either \code{"two.tailed"} or \code{"one.tailed"}. If ignored, \code{"two.tailed"} is the default.
+beta.t.test <- function(n1 = NULL,
+                        n2 = NULL,
+                        d = NULL,
+                        sig.level = 0.05,
+                        type = c("two.sample", "one.sample", "paired"),
+                        tails = c("two.tailed","one.tailed")) {
   if (!is.null(sig.level) && !is.numeric(sig.level) || any(0 > sig.level | sig.level > 1)) 
     stop("sig.level must be a numeric value between 0 and 1")
   if (!is.null(n1) && n1 < 2) 
     stop("The value of n1 (number of observations in the first group) must be at least 2")
   
   type <- match.arg(type)
+  
   tails <- match.arg(tails)
-  d<-abs(d)
-  tsample <- switch(type, one.sample = 1, two.sample = 2, paired = 1)
-  tside <- switch(tails, one.tailed = 1, two.tailed = 2)
+  
+  d <- abs(d)
+  
+  tsample <- switch(type,
+                    one.sample = 1,
+                    two.sample = 2,
+                    paired = 1)
+  
+  tside <- switch(tails,
+                  one.tailed = 1,
+                  two.tailed = 2)
+  
   if (tside == 1) {
     p.body <- quote({
-      nu <- switch(type, one.sample = n1-1, two.sample = n1 + n2 - 2, paired = n1-1)
-      pt(qt(sig.level/tside, nu, lower = FALSE), nu, ncp = d * switch(type, one.sample = sqrt(n1), two.sample = (1/sqrt(1/n1 + 1/n2)), paired = sqrt(n1)), lower = FALSE)
+      nu <- switch(type,
+                   one.sample = n1 - 1,
+                   two.sample = n1 + n2 - 2,
+                   paired = n1 - 1)
+      delta <- d * switch(type,
+                          one.sample = sqrt(n1),
+                          two.sample = (1 / sqrt(1 / n1 + 1 / n2)),
+                          paired = sqrt(n1))
+      
+      pt(q = qt(p = sig.level / tside,
+                df = nu,
+                lower.tail = FALSE),
+         df = nu,
+         ncp = delta,
+         lower.tail = FALSE)
     })
   }
   if (tside == 2) {
     p.body <- quote({
-      nu <- switch(type, one.sample = n1-1, two.sample = n1 + n2 - 2, paired = n1-1)
-      qu <- qt(sig.level/tside, nu, lower = FALSE)
-      pt(qu, nu, ncp = d * switch(type, one.sample = sqrt(n1), two.sample = (1/sqrt(1/n1 + 1/n2)), paired = sqrt(n1)), lower = FALSE) + 
-        pt(-qu, nu, ncp = d * switch(type, one.sample = sqrt(n1), two.sample = (1/sqrt(1/n1 + 1/n2)), paired = sqrt(n1)), lower = TRUE)
+      nu <- switch(type,
+                   one.sample = n1 - 1,
+                   two.sample = n1 + n2 - 2,
+                   paired = n1 - 1)
+      qu <- qt(p = sig.level / tside,
+               df = nu,
+               lower.tail = FALSE)
+      delta <- d * switch(type,
+                          one.sample = sqrt(n1),
+                          two.sample = (1 / sqrt(1 / n1 + 1 / n2)),
+                          paired = sqrt(n1))
+      pt(q = qu,
+         df = nu,
+         ncp = delta,
+         lower.tail = FALSE) +
+        pt(q = -qu,
+           df = nu,
+           ncp = delta,
+           lower.tail = TRUE)
     })
   }
-  1-eval(p.body)
+  1 - eval(p.body)
 }
 
 w.average.error<-function (alpha=NULL,n1=NULL,n2=NULL,d=NULL,T1T2cratio=1,HaHopratio=1,type = c("two.sample", "one.sample", "paired"),tails = c("two.tailed","one.tailed")) 
