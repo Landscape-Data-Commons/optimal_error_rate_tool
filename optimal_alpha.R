@@ -332,10 +332,6 @@ optab.plot <- function(n1 = NULL,
   p
 }
 
-effect.size <- function(x1,n1,s1,type,pctChg,x2,n2,s2,paired,threshold=0){
-  rho = 0.6
-  if(type=="pct"){
-    xd <- x1*pctChg/100
 #' Calculate effect size
 #' @param x1 Numeric. The initial value for group 1.
 #' @param n1 Numeric. The sample size for group 1.
@@ -346,19 +342,36 @@ effect.size <- function(x1,n1,s1,type,pctChg,x2,n2,s2,paired,threshold=0){
 #' @param s2 Optional, numeric. Only used if \code{type} is \code{"two.sample"}.
 #' @param paired Optional, logical. Should the test be paired? Only used if \code{type} is \code{"pct"} or \code{"threshold"}. Defaults to \code{TRUE}
 #' @param threshold Optional, numeric. The difference threshold. Only used if \code{type} is \code{"threshold"}.
+effect.size <- function(x1,
+                        n1,
+                        s1,
+                        type = "pct",
+                        pctChg,
+                        x2 = NULL,
+                        n2 = NULL,
+                        s2 = NULL,
+                        paired = TRUE,
+                        threshold = 0){
+  rho <- 0.6
+  
+  if(type == "pct") {
+    xd <- x1 * pctChg / 100
     if(paired) {
-      sp = sqrt( (n1-1)/n1*s1*2*(1-rho) )
+      sp <- sqrt((n1 - 1) / n1 * s1 * 2 * (1 - rho))
     } else {
-      sp <- sqrt( (n1-1)*s1/n1  )
+      sp <- sqrt((n1 - 1) * s1 / n1)
     }
-  } else if (type=="two.sample") {
-    xd <- abs(x1-x2)
-    sp <- sqrt(((n1-1)*s1+(n2-1)*s2)/(n1+n2-2))
-  } else { # Threshold
-    xd <- abs(x1-threshold)
+  } else if (type == "two.sample") {
+    xd <- abs(x1 - x2)
+    sp <- sqrt(((n1 - 1) * s1 + (n2 - 1) * s2) / (n1 + n2 - 2))
+  } else if (type == "threshold") {
+    xd <- abs(x1 - threshold)
     if(paired) {
-      sp = sqrt( (n1-1)/n1*s1*2*(1-rho) )
+      sp <- sqrt((n1 - 1) / n1 * s1 * 2 * (1 - rho))
     } else {
-      sp <- sqrt( (n1-1)*s1/n1  )
+      sp <- sqrt((n1 - 1) * s1 / n1)
     }
   }
+  
+  xd / sp
+}
