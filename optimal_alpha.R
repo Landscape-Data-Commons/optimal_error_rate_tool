@@ -260,9 +260,6 @@ optab <- function(n1 = NULL,
   
 }
 
-optab.plot <- function(n1=NULL,n2=NULL,d=NULL,a_range=c(0,1),step=0.001,T1T2cratio=1,HaHopratio=1,type = c("two.sample", "one.sample", "paired"),tails = c("two.tailed","one.tailed"),xlim=c(0,0.5),ylim=c(0,0.5)) {  
-  rng <- seq(a_range[1],a_range[2],by=step)
-  out <- data.frame("alpha"=rng,"w"=numeric(length(rng)))
 #' Create a plot for a range of alpha values, marking the optimal alpha and the minimum average error,
 #' @param n1 Numeric. The sample size for group 1
 #' @param n2 Numeric. The sample size for group 2. For a one sample test, enter any value >= 3 for \code{n2}. \code{n2} will be ignored.
@@ -274,15 +271,65 @@ optab.plot <- function(n1=NULL,n2=NULL,d=NULL,a_range=c(0,1),step=0.001,T1T2crat
 #' @param tails Character string. The number of tails being examined. Must be either \code{"two.tailed"} or \code{"one.tailed"}. If ignored, \code{"two.tailed"} is the default.
 #' @param xlim Numeric vector. The minimum and maximum values for the x axis of the plot. Defaults to \code{c(0, 0.5)}.
 #' @param ylim Numeric vector. The minimum and maximum values for the y axis of the plot. Defaults to \code{c(0, 0.5)}.
+optab.plot <- function(n1 = NULL,
+                       n2 = NULL,
+                       d = NULL,
+                       a_range = c(0, 1),
+                       step = 0.001,
+                       T1T2cratio = 1,
+                       HaHopratio = 1,
+                       type = c("two.sample", "one.sample", "paired"),
+                       tails = c("two.tailed","one.tailed"),
+                       xlim = c(0, 0.5),
+                       ylim = c(0, 0.5)) {  
+  rng <- seq(a_range[1],
+             a_range[2],
+             by = step)
+  
+  out <- data.frame("alpha" = rng,
+                    "w" = numeric(length(rng)))
+  
   for (a in rng) {
-    out[out$alpha==a,2]=w.average.error(a,n1,n2,d,T1T2cratio,HaHopratio,type,tails)
+    out[out$alpha == a, 2] <- w.average.error(alpha = a,
+                                              n1 = n1,
+                                              n2 = n2,
+                                              d = d,
+                                              T1T2cratio = T1T2cratio,
+                                              HaHopratio = HaHopratio,
+                                              type,tails)
   }
-  p<-ggplot(data=out,aes(x=alpha,y=w))+geom_line(size=1.5)+coord_cartesian(xlim=xlim,ylim=ylim)+
-    xlab("Alpha")+ylab("Average Error Rate (alpha + beta)")+
-    #ggtitle("Average error by alpha level")+
-    geom_hline(yintercept=min.average.error(n1=n1,n2=n2,d=d,T1T2cratio=T1T2cratio,HaHopratio=HaHopratio,type=type,tails=tails),linetype=2,color="steelblue")+
-    geom_vline(xintercept=alpha(n1=n1,n2=n2,d=d,T1T2cratio=T1T2cratio,HaHopratio=HaHopratio,type=type,tails=tails),linetype=2,color="steelblue")
-    p+theme(text=element_text(size=18),axis.text.y=element_text(angle=90))
+  
+  p <- ggplot(data = out,
+              aes(x = alpha,
+                  y = w)) +
+    geom_line(size = 1.5) +
+    coord_cartesian(xlim = xlim,
+                    ylim = ylim) +
+    xlab("Alpha") +
+    ylab("Average Error Rate (alpha + beta)") +
+    geom_hline(yintercept = min.average.error(n1 = n1,
+                                              n2 = n2,
+                                              d = d,
+                                              T1T2cratio = T1T2cratio,
+                                              HaHopratio = HaHopratio,
+                                              type = type,
+                                              tails = tails),
+               linetype = 2,
+               color = "steelblue") +
+    geom_vline(xintercept = alpha(n1 = n1,
+                                  n2 = n2,
+                                  d = d,
+                                  T1T2cratio = T1T2cratio,
+                                  HaHopratio = HaHopratio,
+                                  type = type,
+                                  tails = tails),
+               linetype = 2,
+               color = "steelblue") +
+    theme_minimal() +
+    theme(text = element_text(size = 18),
+          axis.text.y = element_text(angle = 90))
+  
+  p
 }
 
 effect.size <- function(x1,n1,s1,type,pctChg,x2,n2,s2,paired,threshold=0){
